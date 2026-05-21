@@ -2,8 +2,8 @@ name: Book Chang'e Room
 
 on:
   schedule:
-    # GitHub cron is UTC. 05:35 UTC is 13:35 in Asia/Shanghai.
-    - cron: "35 5 * * *"
+    # GitHub cron is UTC. 05:50 UTC is 13:50 in Asia/Shanghai.
+    - cron: "50 5 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
