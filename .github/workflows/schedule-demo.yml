@@ -1,0 +1,19 @@
+name: Schedule Demo
+run-name: Schedule demo fired by ${{ github.event_name }}
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  schedule-smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "event=${{ github.event_name }}"
+      - run: date -u
+      - run: echo "ref=${{ github.ref }}"
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: List workflow files
+        run: ls -la .github/workflows
