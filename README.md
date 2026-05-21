@@ -1,6 +1,6 @@
 # Lark Chang'e Room Booker
 
-每天北京时间 13:20 自动预约三天后的 `诚盈9号楼-4F-嫦娥`，时间段是 16:00-18:00。
+每天北京时间 13:25 自动预约三天后的 `诚盈9号楼-4F-嫦娥`，时间段是 16:00-18:00。
 
 ## What It Does
 
@@ -36,10 +36,10 @@ Workflow: `.github/workflows/book-chang-e-room.yml`
 Schedule:
 
 ```yaml
-cron: "20 5 * * *"
+cron: "25 5 * * *"
 ```
 
-GitHub Actions 的 cron 使用 UTC，所以 `05:20 UTC` 等于北京时间 `13:20`。
+GitHub Actions 的 cron 使用 UTC，所以 `05:25 UTC` 等于北京时间 `13:25`。
 
 ## Required Lark Scopes
 
