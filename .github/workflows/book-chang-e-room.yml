@@ -1,0 +1,79 @@
+name: Book Chang'e Room
+
+on:
+  schedule:
+    # GitHub cron is UTC. 16:00 UTC is 00:00 the next day in Asia/Shanghai.
+    - cron: "0 16 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run the lookup and creation request in dry-run mode"
+        type: boolean
+        default: true
+      target_date:
+        description: "Optional explicit booking date, YYYY-MM-DD"
+        type: string
+        required: false
+
+concurrency:
+  group: lark-chang-e-room-booker
+  cancel-in-progress: false
+
+jobs:
+  book:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      LARK_CLI_VERSION: "1.0.35"
+      LARK_PROFILE: ${{ vars.LARK_PROFILE || '猎聘' }}
+      TIMEZONE: Asia/Shanghai
+      DAYS_AHEAD: "3"
+      ROOM_NAME: 嫦娥
+      ROOM_FLOOR: F4
+      START_TIME: "16:00"
+      END_TIME: "18:00"
+      SUMMARY: 嫦娥会议室预约
+      TARGET_DATE: ${{ github.event_name == 'workflow_dispatch' && inputs.target_date || '' }}
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
+      LARK_CLI_HOME_B64: ${{ secrets.LARK_CLI_HOME_B64 }}
+      LARK_APP_ID: ${{ secrets.LARK_APP_ID }}
+      LARK_APP_SECRET: ${{ secrets.LARK_APP_SECRET }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install lark-cli
+        run: npm install -g "@larksuite/cli@${LARK_CLI_VERSION}"
+
+      - name: Restore lark-cli home
+        if: ${{ env.LARK_CLI_HOME_B64 != '' }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME"
+          printf '%s' "$LARK_CLI_HOME_B64" | base64 -d | tar -xz -C "$HOME"
+
+      - name: Configure lark-cli app
+        if: ${{ env.LARK_APP_ID != '' && env.LARK_APP_SECRET != '' }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$LARK_APP_SECRET" | lark-cli config init \
+            --name "$LARK_PROFILE" \
+            --app-id "$LARK_APP_ID" \
+            --app-secret-stdin \
+            --brand feishu
+
+      - name: Verify lark-cli auth
+        run: lark-cli --profile "$LARK_PROFILE" auth status --verify
+
+      - name: Check script syntax
+        run: npm run check
+
+      - name: Book room
+        run: node scripts/book-chang-e-room.mjs

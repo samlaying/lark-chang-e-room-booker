@@ -1,0 +1,13 @@
+{
+  "name": "lark-chang-e-room-booker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check scripts/book-chang-e-room.mjs",
+    "dry-run": "node scripts/book-chang-e-room.mjs --dry-run"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
