@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   book:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     timeout-minutes: 10
 
     env:
@@ -37,8 +37,8 @@ jobs:
       TARGET_DATE: ${{ github.event_name == 'workflow_dispatch' && inputs.target_date || '' }}
       DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
       LARK_CLI_HOME_B64: ${{ secrets.LARK_CLI_HOME_B64 }}
-      LARK_APP_ID: ${{ secrets.LARK_APP_ID }}
-      LARK_APP_SECRET: ${{ secrets.LARK_APP_SECRET }}
+      LARK_CLI_SUPPORT_B64: ${{ secrets.LARK_CLI_SUPPORT_B64 }}
+      LARK_CLI_MASTER_KEY: ${{ secrets.LARK_CLI_MASTER_KEY }}
 
     steps:
       - name: Checkout
@@ -59,15 +59,22 @@ jobs:
           mkdir -p "$HOME"
           printf '%s' "$LARK_CLI_HOME_B64" | base64 -d | tar -xz -C "$HOME"
 
-      - name: Configure lark-cli app
-        if: ${{ env.LARK_APP_ID != '' && env.LARK_APP_SECRET != '' }}
+      - name: Restore lark-cli encrypted credentials
+        if: ${{ env.LARK_CLI_SUPPORT_B64 != '' }}
         run: |
           set -euo pipefail
-          printf '%s' "$LARK_APP_SECRET" | lark-cli config init \
-            --name "$LARK_PROFILE" \
-            --app-id "$LARK_APP_ID" \
-            --app-secret-stdin \
-            --brand feishu
+          mkdir -p "$HOME"
+          printf '%s' "$LARK_CLI_SUPPORT_B64" | base64 -d | tar -xz -C "$HOME"
+
+      - name: Restore lark-cli keychain master key
+        if: ${{ env.LARK_CLI_MASTER_KEY != '' }}
+        run: |
+          set -euo pipefail
+          security add-generic-password \
+            -a master.key \
+            -s lark-cli \
+            -w "$LARK_CLI_MASTER_KEY" \
+            -U
 
       - name: Verify lark-cli auth
         run: lark-cli --profile "$LARK_PROFILE" auth status --verify
