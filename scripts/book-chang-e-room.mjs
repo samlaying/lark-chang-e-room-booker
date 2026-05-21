@@ -7,8 +7,8 @@ const DEFAULTS = {
   daysAhead: 3,
   roomName: "嫦娥",
   roomFloor: "F4",
-  startClock: "19:00",
-  endClock: "20:00",
+  startClock: "16:00",
+  endClock: "18:00",
   summary: "Bagent日会",
   attendeeIds: "ou_6dd9ee4404478ed4a4d3e6a474bc9613",
 };
@@ -63,7 +63,7 @@ function parseCsv(value) {
 function printHelp() {
   console.log(`Usage: node scripts/book-chang-e-room.mjs [--dry-run] [--date YYYY-MM-DD]
 
-Books the F4 Chang'e meeting room three days ahead, 19:00-20:00 Asia/Shanghai by default.
+Books the F4 Chang'e meeting room three days ahead, 16:00-18:00 Asia/Shanghai by default.
 
 Environment overrides:
   LARK_PROFILE, TIMEZONE, DAYS_AHEAD, TARGET_DATE, ROOM_NAME, ROOM_FLOOR,
