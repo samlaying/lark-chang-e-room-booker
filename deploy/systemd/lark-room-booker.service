@@ -1,0 +1,15 @@
+[Unit]
+Description=Lark Chang'e room daily booking job
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/lark-chang-e-room-booker
+EnvironmentFile=/etc/lark-chang-e-room-booker.env
+ExecStart=/usr/bin/env node scripts/book-chang-e-room.mjs
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

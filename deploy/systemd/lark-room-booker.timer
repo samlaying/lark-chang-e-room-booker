@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Lark Chang'e room booking daily at 16:30 Asia/Shanghai
+
+[Timer]
+OnCalendar=*-*-* 16:30:00 Asia/Shanghai
+Persistent=true
+Unit=lark-room-booker.service
+
+[Install]
+WantedBy=timers.target

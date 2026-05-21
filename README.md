@@ -1,6 +1,6 @@
 # Lark Chang'e Room Booker
 
-每天北京时间 13:50 自动预约三天后的 `诚盈9号楼-4F-嫦娥`，时间段是 16:00-18:00。
+每天自动预约三天后的 `诚盈9号楼-4F-嫦娥`，时间段是 16:00-18:00。
 
 ## What It Does
 
@@ -36,10 +36,9 @@ Workflow: `.github/workflows/book-chang-e-room.yml`
 Schedule:
 
 ```yaml
-cron: "50 5 * * *"
+cron: "30 16 * * *"
+timezone: "Asia/Shanghai"
 ```
-
-GitHub Actions 的 cron 使用 UTC，所以 `05:50 UTC` 等于北京时间 `13:50`。
 
 ## Required Lark Scopes
 
@@ -102,3 +101,43 @@ tar -C "$HOME" -czf - .lark-cli | base64 | tr -d '\n'
 | `ATTENDEE_IDS` | `ou_6dd9ee4404478ed4a4d3e6a474bc9613` |
 
 Manual workflow dispatch 默认是 dry-run。确认结果后，把 `dry_run` 取消勾选即可真正创建。
+
+## Deploy To Your Server (Ubuntu 22.04)
+
+This repo includes `systemd` deployment files so you can run without GitHub `schedule`.
+
+### 1) Connect to server
+
+```bash
+ssh root@47.99.87.139
+```
+
+### 2) Clone and install
+
+```bash
+git clone https://github.com/samlaying/lark-chang-e-room-booker.git
+cd lark-chang-e-room-booker
+sudo bash deploy/install-on-ubuntu.sh
+```
+
+### 3) Authorize lark-cli once on server
+
+```bash
+lark-cli config init --name "猎聘"
+lark-cli --profile "猎聘" auth login --scope "calendar:calendar.event:create calendar:calendar.event:update calendar:calendar.event:read calendar:calendar.free_busy:read"
+lark-cli --profile "猎聘" auth status --verify
+```
+
+### 4) Review env and run a test booking
+
+```bash
+sudo vi /etc/lark-chang-e-room-booker.env
+sudo systemctl start lark-room-booker.service
+sudo journalctl -u lark-room-booker.service -n 100 --no-pager
+```
+
+### 5) Check timer status
+
+```bash
+systemctl list-timers lark-room-booker.timer
+```
