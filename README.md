@@ -1,6 +1,6 @@
 # Lark Chang'e Room Booker
 
-每天北京时间 00:00 自动预约三天后的 `诚盈9号楼-4F-嫦娥`，时间段是 16:00-18:00。
+每天北京时间 13:30 自动预约三天后的 `诚盈9号楼-4F-嫦娥`，时间段是 19:00-20:00。
 
 ## What It Does
 
@@ -36,10 +36,10 @@ Workflow: `.github/workflows/book-chang-e-room.yml`
 Schedule:
 
 ```yaml
-cron: "0 16 * * *"
+cron: "30 5 * * *"
 ```
 
-GitHub Actions 的 cron 使用 UTC，所以 `16:00 UTC` 等于北京时间第二天 `00:00`。
+GitHub Actions 的 cron 使用 UTC，所以 `05:30 UTC` 等于北京时间 `13:30`。
 
 ## Required Lark Scopes
 
@@ -71,9 +71,9 @@ lark-cli --profile "猎聘" auth status --verify
 
 把可用的 lark-cli 配置注入为 secret：
 
-- `LARK_APP_ID`
-- `LARK_APP_SECRET`
 - `LARK_CLI_HOME_B64`
+- `LARK_CLI_SUPPORT_B64`
+- `LARK_CLI_MASTER_KEY`
 
 `LARK_CLI_HOME_B64` 是 `$HOME/.lark-cli` 的压缩包。生成命令：
 
@@ -96,8 +96,8 @@ tar -C "$HOME" -czf - .lark-cli | base64 | tr -d '\n'
 | `DAYS_AHEAD` | `3` |
 | `ROOM_NAME` | `嫦娥` |
 | `ROOM_FLOOR` | `F4` |
-| `START_TIME` | `16:00` |
-| `END_TIME` | `18:00` |
-| `SUMMARY` | `嫦娥会议室预约` |
+| `START_TIME` | `19:00` |
+| `END_TIME` | `20:00` |
+| `SUMMARY` | `Bagent日会` |
 
 Manual workflow dispatch 默认是 dry-run。确认结果后，把 `dry_run` 取消勾选即可真正创建。

@@ -2,8 +2,8 @@ name: Book Chang'e Room
 
 on:
   schedule:
-    # GitHub cron is UTC. 16:00 UTC is 00:00 the next day in Asia/Shanghai.
-    - cron: "0 16 * * *"
+    # GitHub cron is UTC. 05:30 UTC is 13:30 in Asia/Shanghai.
+    - cron: "30 5 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -31,9 +31,9 @@ jobs:
       DAYS_AHEAD: "3"
       ROOM_NAME: 嫦娥
       ROOM_FLOOR: F4
-      START_TIME: "16:00"
-      END_TIME: "18:00"
-      SUMMARY: 嫦娥会议室预约
+      START_TIME: "19:00"
+      END_TIME: "20:00"
+      SUMMARY: Bagent日会
       TARGET_DATE: ${{ github.event_name == 'workflow_dispatch' && inputs.target_date || '' }}
       DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
       LARK_CLI_HOME_B64: ${{ secrets.LARK_CLI_HOME_B64 }}
