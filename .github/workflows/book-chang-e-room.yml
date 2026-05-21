@@ -34,6 +34,7 @@ jobs:
       START_TIME: "19:00"
       END_TIME: "20:00"
       SUMMARY: Bagent日会
+      ATTENDEE_IDS: ou_6dd9ee4404478ed4a4d3e6a474bc9613
       TARGET_DATE: ${{ github.event_name == 'workflow_dispatch' && inputs.target_date || '' }}
       DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
       LARK_CLI_HOME_B64: ${{ secrets.LARK_CLI_HOME_B64 }}

@@ -7,9 +7,10 @@ const DEFAULTS = {
   daysAhead: 3,
   roomName: "嫦娥",
   roomFloor: "F4",
-  startClock: "16:00",
-  endClock: "18:00",
-  summary: "嫦娥会议室预约",
+  startClock: "19:00",
+  endClock: "20:00",
+  summary: "Bagent日会",
+  attendeeIds: "ou_6dd9ee4404478ed4a4d3e6a474bc9613",
 };
 
 function parseArgs(argv) {
@@ -46,19 +47,27 @@ function configFromEnv(args) {
     startClock: process.env.START_TIME || DEFAULTS.startClock,
     endClock: process.env.END_TIME || DEFAULTS.endClock,
     summary: process.env.SUMMARY || DEFAULTS.summary,
+    attendeeIds: parseCsv(process.env.ATTENDEE_IDS || DEFAULTS.attendeeIds),
     date: args.date || process.env.TARGET_DATE,
     dryRun: args.dryRun,
   };
 }
 
+function parseCsv(value) {
+  return value
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 function printHelp() {
   console.log(`Usage: node scripts/book-chang-e-room.mjs [--dry-run] [--date YYYY-MM-DD]
 
-Books the F4 Chang'e meeting room three days ahead, 16:00-18:00 Asia/Shanghai by default.
+Books the F4 Chang'e meeting room three days ahead, 19:00-20:00 Asia/Shanghai by default.
 
 Environment overrides:
   LARK_PROFILE, TIMEZONE, DAYS_AHEAD, TARGET_DATE, ROOM_NAME, ROOM_FLOOR,
-  START_TIME, END_TIME, SUMMARY, DRY_RUN
+  START_TIME, END_TIME, SUMMARY, ATTENDEE_IDS, DRY_RUN
 `);
 }
 
@@ -261,6 +270,7 @@ function findRoom(config, start, end) {
 }
 
 function createBooking(config, start, end, room) {
+  const attendeeIds = [...new Set([room.room_id, ...config.attendeeIds])];
   const args = [
     "calendar",
     "+create",
@@ -271,7 +281,7 @@ function createBooking(config, start, end, room) {
     "--end",
     end,
     "--attendee-ids",
-    room.room_id,
+    attendeeIds.join(","),
     "--description",
     `Automated reservation for ${room.room_name}. Created by GitHub Actions.`,
     "--format",
@@ -296,6 +306,7 @@ function main() {
 
   console.log(`Target slot: ${start} - ${end}`);
   console.log(`Room query: ${config.roomFloor ? `${config.roomFloor} ` : ""}${config.roomName}`);
+  console.log(`Fixed attendees: ${config.attendeeIds.length}`);
   console.log(`Mode: ${config.dryRun ? "dry-run" : "create"}`);
 
   if (!config.dryRun && hasExistingBooking(config, start, end)) {
@@ -323,6 +334,7 @@ function main() {
       name: room.room_name,
       capacity: room.capacity,
     },
+    fixedAttendees: config.attendeeIds.length,
   }, null, 2));
 }
 

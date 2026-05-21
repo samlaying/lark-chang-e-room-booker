@@ -6,7 +6,7 @@
 
 - 按 `Asia/Shanghai` 计算“三天后”的日期。
 - 查找 `F4`、`嫦娥` 在目标时间段是否空闲。
-- 使用 `calendar +create` 创建日程，并把返回的会议室 `omm_...` ID 加为参会人。
+- 使用 `calendar +create` 创建日程，并把返回的会议室 `omm_...` ID 和固定参会人一起加入。
 - 非 dry-run 时会先查同时间段是否已有同标题预约，避免重复创建。
 
 ## Local Test
@@ -99,5 +99,6 @@ tar -C "$HOME" -czf - .lark-cli | base64 | tr -d '\n'
 | `START_TIME` | `19:00` |
 | `END_TIME` | `20:00` |
 | `SUMMARY` | `Bagent日会` |
+| `ATTENDEE_IDS` | `ou_6dd9ee4404478ed4a4d3e6a474bc9613` |
 
 Manual workflow dispatch 默认是 dry-run。确认结果后，把 `dry_run` 取消勾选即可真正创建。
